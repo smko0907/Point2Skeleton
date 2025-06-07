@@ -55,10 +55,10 @@ python test.py --pc_list_file ../data/data-split/all-test.txt --data_root ../dat
 * See `python test.py --help` for all the testing options. 
 
 ### Download 
-* Train/test data [data.zip](https://drive.google.com/file/d/1FlX8kqw-e_caxG_IIG5Hbk2qTl1eTWww/view?usp=sharing).
-* Pre-trained model [weights.zip](https://drive.google.com/file/d/1qRSQJYoIssc43D4w16NeE9U9u-tbw2DN/view?usp=sharing).
+* Train/test data [data.zip](https://1drv.ms/u/s!AlrKELj1ZvAndafaO-Vic70KIus?e=uq53tW).
+* Pre-trained model [weights.zip](https://1drv.ms/u/s!AlrKELj1ZvAnd5pJTH48YhJXBf8?e=tPAqG7).
 * Unzip the downloaded files to replace the `data/` and `weights/` folders; then you can run the code by simply calling `python train.py` and `python test.py`.
-* Dense point cloud [data_dense.zip](https://drive.google.com/file/d/1F5My_kkY6NAiLQP5bvva2nPpLsExhrEr/view?usp=sharing) and simplified MAT [MAT.zip](https://drive.google.com/file/d/1rX_bBsMIJ9-KdNdjmJoShd94BfaggoFN/view?usp=sharing) for evaluation.
+* Dense point cloud [data_dense.zip](https://1drv.ms/u/s!AlrKELj1ZvAneSIupp5qJDE5pJE?e=oWsdFv) and simplified MAT [MAT.zip](https://1drv.ms/u/s!AlrKELj1ZvAndu8fXM5RF64tX6M?e=3v7UM3) for evaluation.
 
 ## Acknowledgement
 We would like to acknowledge the following projects:

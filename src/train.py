@@ -108,6 +108,7 @@ if __name__ == "__main__":
         model_skel.cuda()
         model_skel.train(mode=True)
         model_gae.cuda()
+        # Set the module in training mode
         model_gae.train(mode=True)
     else:
         print("No CUDA detected.")
@@ -116,7 +117,17 @@ if __name__ == "__main__":
     #load data and train
     pc_list = rw.load_data_id(pc_list_file)
     train_data = PCDataset(pc_list, data_root, point_num)
-    train_loader = DataLoader(dataset=train_data, batch_size=conf.BATCH_SIZE, shuffle=True, drop_last=True)
+    # -------------------------------------------------
+    # Data Loader combines a dataset and a sampler; return an iterable over the given dataset
+    # dataset: dataset from which to load the data; pointcloud data 
+    # batch_size: how many samples per batch to load
+    # num_workers: how many subprocesses to use for data loading 
+    # shuffle: reshuffle the data at every epoch
+    # drop_last: set to True to drop the last incomplete batcch if the dataset size is not divisble by batch size
+    train_loader = DataLoader(dataset=train_data, 
+                              batch_size=conf.BATCH_SIZE, 
+                              shuffle=True, 
+                              drop_last=True)
     
     iter = -1
     total_epoch = conf.PRE_TRAIN_EPOCH + conf.SKELPOINT_TRAIN_EPOCH + conf.GAE_TRAIN_EPOCH
@@ -172,23 +183,48 @@ if __name__ == "__main__":
             else:
                 print('######### GAE training #########')
 
-                # frezee the skeletal point network
+                # 1. Frezee the skeletal point network
+                # the network that finds the points (model_skel) is set to train(mode=False). 
+                # This means we stop moving the points and focus only on connecting them.
                 if epoch == conf.PRE_TRAIN_EPOCH + conf.SKELPOINT_TRAIN_EPOCH:
                     model_skel.train(mode=False)
 
-                # get skeletal points and the node features
+                # 2. Get skeletal points and the node features from pointcloud batch:
+                # if `compute_graph` is true, returns the initial graph called `A_init`, `valid_mask`, `known_mask`
                 skel_xyz, skel_r, sample_xyz, weights, shape_features, A_init, valid_mask, known_mask = model_skel(
                     batch_pc, compute_graph=True)
                 skel_node_features = torch.cat([shape_features, skel_xyz, skel_r], 2).detach()
                 A_init = A_init.detach()
 
-                # train GAE
+                # 3. Feeding the Network: We give the model_gae the point features and the initial graph.
+                # Here, the forward action happens...
+                # 1) Input: It takes the skeletal features (positions, radius) and the initial graph (A_init).
+                # 2) Transformation: It passes them through the 12 layers of Graph Convolutions defined in the encode function.
+                # 3) The Decoder: Finally, it runs the `InnerProductDecoder`, which calculates a "score" for every possible pair of points to see if they should be connected.
                 A_pred = model_gae(skel_node_features, A_init)
+
+                # 4. Calculating Loss: The "Loss" is the network's score on a test. 
+                # It compares the connections the AI predicted to the "correct" connections.
+                # If the AI misses a connection or adds a wrong one, the loss goes up.
+                # This loss value tells the system exactly how much error exists in the current stage
                 loss_MBCE = model_gae.compute_loss(A_pred, A_init, known_mask.detach())
+                # MBCE (Modified Binary Cross Entropy)
+                # 
+
+                # 5. The Optimizer: 
                 optimizer_gae.zero_grad()
+                # loss_MBCE.backward() performs a mathmatical trick called backpropagation ("the blame game");
+                # traveling backward through all 12 layers of the network to find out which
+                # specific "neurons" (parameters) were responsible for the mistake
                 loss_MBCE.backward()
+                # The line optimizer_gae.step() is where the actual "learning" and "correction" happens. 
+                # Given the "blame" information, the AI tweaks its internal settings (weights) 
+                # to make the loss smaller the next time it tries.
                 optimizer_gae.step()
 
+                # 6. Recovering the adjacency Matrix:
+                # Finally, recover_A takes the AI's "maybe" guesses (probabilities) and 
+                # turns them into a hard "Yes" or "No" (1 or 0) for every possible connection.
                 A_final = model_gae.recover_A(A_pred, valid_mask)
 
                 if iter % save_result_iter == 0:

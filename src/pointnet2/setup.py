@@ -16,7 +16,10 @@ _ext_sources = glob.glob("{}/src/*.cpp".format(_ext_src_root)) + glob.glob(
 )
 _ext_headers = glob.glob("{}/include/*".format(_ext_src_root))
 
-requirements = ["h5py", "pprint", "enum34", "future"]
+# requirements = ["h5py", "pprint", "enum34", "future"]
+requirements = ["h5py", "future"]
+
+# https://docs.pytorch.org/docs/stable/cpp_extension.html
 
 setup(
     name="pointnet2",
@@ -28,10 +31,13 @@ setup(
         CUDAExtension(
             name="_ext",
             sources=_ext_sources,
-            extra_compile_args={
-                "cxx": ["-O2", "-I{}".format("{}/include".format(_ext_src_root))],
-                "nvcc": ["-O2", "-I{}".format("{}/include".format(_ext_src_root))],
-            },
+            # extra_compile_args={
+            #     "cxx": ["-O2", "-I{}".format("{}/include".format(_ext_src_root))],
+            #     "nvcc": ["-O2", "-I{}".format("{}/include".format(_ext_src_root))],
+            # },
+            extra_compile_args={'cxx': ['-std=c++17', '-D_GLIBCXX_USE_CXX11_ABI=1'],
+                'nvcc': ['-std=c++17']
+            },     
         )
     ],
     cmdclass={"build_ext": BuildExtension},

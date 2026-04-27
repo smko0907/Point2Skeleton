@@ -137,7 +137,7 @@ def load_off(path):
     lines = fopen.readlines()
     linecount = 0
     pts = np.zeros((1, 3), np.float64)
-    faces = np.zeros((1, 3), np.int)
+    faces = np.zeros((1, 3), int)
     p_num = 0
     f_num = 0
 
@@ -150,8 +150,8 @@ def load_off(path):
         if linecount == 2:
             p_num = int(word[0])
             f_num = int(word[1])
-            pts = np.zeros((p_num, 3), np.float)
-            faces = np.zeros((f_num, 3), np.int)
+            pts = np.zeros((p_num, 3), float)
+            faces = np.zeros((f_num, 3), int)
         if linecount >= 3 and linecount < 3 + p_num:
             pts[linecount - 3, :] = np.float64(word[0:3])
         if linecount >= 3 + p_num:

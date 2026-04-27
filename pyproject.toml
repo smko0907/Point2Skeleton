@@ -16,6 +16,8 @@ dependencies = [
     "pillow",
     "opencv-python-headless",
     "tqdm",
+    "tensorflow",
+    "tensorboard",
     "tensorboardX",
     "scipy",
     "setuptools",

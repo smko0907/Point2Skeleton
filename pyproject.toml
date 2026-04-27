@@ -1,0 +1,41 @@
+[build-system]
+requires = ["setuptools>=40.8.0", "Cython>=0.29.32", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "point2skeleton"
+version = "0.1.0"
+description = "Add your description here"
+readme = "README.md"
+requires-python = ">=3.13"
+dependencies = [
+    "numpy",
+    "future",
+    "torch==2.7.0",
+    "torchvision",
+    "pillow",
+    "opencv-python-headless",
+    "tqdm",
+    "tensorboardX",
+    "scipy",
+    "setuptools",
+    "visdom",
+    # "pointnet2"
+]
+
+# run via uv sync --no-build-isolation
+
+[tool.uv.extra-build-dependencies]
+visdom = ["setuptools"]
+pointnet2 = ["torch", "setuptools", "h5py", "future", "tqdm", "scipy", "visdom"]
+
+[tool.uv.sources]
+
+torch = [{ url = "https://download.pytorch.org/whl/cu128/torch-2.7.0%2Bcu128-cp313-cp313-manylinux_2_28_x86_64.whl"},]
+
+pointnet2 = { path = "./src/pointnet2", editable = true }
+
+# [tool.uv.workspace]
+# members = [
+#     "src/pointnet2",
+# ]

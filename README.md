@@ -37,16 +37,9 @@ uv sync
 source .venv/bin/activate
 ```
 
-If `uv sync` fails to build PointNet++, please try the two following methods:
+If `uv sync` fails to build PointNet++, please run the following make command:
 ```
-uv sync --no-build-isolation
-cd src/pointnet2
-python setup.py build_ext --inplace
-```
-
-```
-cd src/pointnet2
-uv sync
+make sync
 ```
 
 ### TensorboardX

@@ -27,13 +27,32 @@ We introduce a generalized skeletal representation, called skeletal mesh. Severa
 
 ## Code
 ### Installation
-You need to install [PyTorch](https://pytorch.org/), [NumPy](https://numpy.org/), and [TensorboardX](https://github.com/lanpa/tensorboardX) (for visualization of training). This code is tested under Python 3.7.3, PyTorch 1.1.0, NumPy 1.16.4 on Ubuntu 18.04.
+This repository was tested under Python 3.13, PyTorch 2.7.0 (CUDA 12.8), NumPy 2.4.4 on Ubuntu 22.04.
+You need to install the dependencies via UV. Please install UV and run `uv sync` to install annd build all modules.
 
-To setup PointNet++, please use:
 ```
-pip install -r requirements.txt
+apt-get update && apt-get install curl
+curl -LsSf https://astral.sh/uv/install.sh | sh
+uv sync
+source .venv/bin/activate
+```
+
+If `uv sync` fails to build PointNet++, please try the two following methods:
+```
+uv sync --no-build-isolation
 cd src/pointnet2
 python setup.py build_ext --inplace
+```
+
+```
+cd src/pointnet2
+uv sync
+```
+
+### TensorboardX
+To launch tensorboard from terminal, run the following command:
+```
+tensorboard --logdir tensorboard
 ```
 
 ### Training
